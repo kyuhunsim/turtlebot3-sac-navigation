@@ -113,6 +113,19 @@ source ~/catkin_ws/devel/setup.bash
 roslaunch turtlebot3_sac turtlebot3_sac_stage_4.launch
 ```
 
+## Stage 차이
+
+이 repository에서 `stage`는 Gazebo world 자체를 자동으로 바꾸는 이름이라기보다, SAC 실험 설정을 나누는 preset입니다. Gazebo world는 따로 `roslaunch turtlebot3_gazebo basement3_world.launch`로 실행하고, SAC launch 파일이 학습/검증 방식과 obstacle script를 선택합니다.
+
+| Stage | launch 파일 | 용도 | 동작 |
+| --- | --- | --- | --- |
+| Stage 1 | `sac/launch/turtlebot3_sac_stage_1.launch` | 기본 SAC 학습 preset | `train_2.py`를 `/stage_number=1`로 실행합니다. 비교적 단순한 학습 설정입니다. |
+| Stage 4 | `sac/launch/turtlebot3_sac_stage_4.launch` | 주 custom map 학습 preset | `train_2.py`를 `/stage_number=4`로 실행하고 `combination_obstacle_1.py`, `combination_obstacle_2.py`로 움직이는 장애물을 함께 실행합니다. |
+| Stage 4 validation | `sac/launch/turtlebot3_sac_stage_1_validate.launch` | 복잡한 custom map 검증 | 파일명에는 stage 1이 들어가 있지만 실제 launch 내부에서는 `/stage_number=4`를 설정하고 `validate_3.py`를 실행합니다. |
+| Stage 5 validation | `sac/launch/turtlebot3_sac_stage_5_validate.launch` | 추가 검증 preset | `validate_4.py`와 `combination_obstacle_3.py`, `combination_obstacle_4.py`를 실행합니다. |
+
+정리하면, 간단한 navigation 환경에서 학습한 모델을 기반으로 더 복잡한 custom map에서도 obstacle avoidance가 잘 되는지 확인하는 흐름입니다. README의 GIF 결과는 복잡한 맵에서 회피가 잘 된 결과를 보여주는 것입니다.
+
 ## 설정 바꾸는 곳
 
 대부분의 학습 설정은 여기서 바꿉니다.
@@ -132,6 +145,7 @@ sac/node/default.py
 - `world`: model/log 저장 하위 폴더 이름
 - `load_model`: 기존 checkpoint를 불러올지 여부
 - `load_episode`: 불러올 episode 번호
+- `/stage_number`: launch 파일에서 설정되는 ROS parameter. goal/validation logic이 stage별 동작을 구분할 때 사용합니다.
 
 새로 학습할 때는 기본값처럼 `load_model = False`를 유지합니다. 기존 학습 모델로 이어서 돌릴 때는 `load_model = True`, `load_episode = 2500`처럼 바꾸면 됩니다.
 

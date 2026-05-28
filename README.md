@@ -119,6 +119,19 @@ Launch validation:
 roslaunch turtlebot3_sac turtlebot3_sac_stage_1_validate.launch
 ```
 
+## Stages
+
+In this repository, a `stage` is an experiment preset used by the SAC launch files. It does not automatically switch the Gazebo world by itself. The Gazebo world is launched separately with `turtlebot3_gazebo basement3_world.launch`, and the SAC launch file selects the training or validation behavior.
+
+| Stage | Launch file | Purpose | Behavior |
+| --- | --- | --- | --- |
+| Stage 1 | `sac/launch/turtlebot3_sac_stage_1.launch` | Basic SAC training preset | Runs `train_2.py` with `/stage_number=1`. This is the simpler training setup. |
+| Stage 4 | `sac/launch/turtlebot3_sac_stage_4.launch` | Main custom-map training preset | Runs `train_2.py` with `/stage_number=4` and starts `combination_obstacle_1.py` and `combination_obstacle_2.py` for moving obstacle behavior. |
+| Stage 4 validation | `sac/launch/turtlebot3_sac_stage_1_validate.launch` | Validation on the complex custom map | Runs `validate_3.py` with moving obstacle scripts. Despite the filename, the launch file sets `/stage_number=4`. |
+| Stage 5 validation | `sac/launch/turtlebot3_sac_stage_5_validate.launch` | Additional validation preset | Runs `validate_4.py` with `combination_obstacle_3.py` and `combination_obstacle_4.py`. |
+
+The project result is that a model trained from a simpler navigation setup was able to generalize to the more complex custom map and avoid obstacles in the recorded runs.
+
 ## Configuration
 
 Main training settings are in:
@@ -137,6 +150,7 @@ Important fields:
 - `ACTION_W_MIN`, `ACTION_W_MAX`: angular velocity range.
 - `world`: checkpoint/log subdirectory name.
 - `load_model`, `load_episode`: whether to resume from an existing checkpoint. Keep `load_model = False` for fresh training from a new clone.
+- `/stage_number`: ROS parameter set by the launch files. It is consumed by the goal/validation logic to decide stage-specific behavior.
 
 Training entrypoint:
 
