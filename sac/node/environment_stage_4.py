@@ -18,7 +18,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardi
 if world:
     from src.env.respawnGoal_custom_worlds import Respawn
 else:
-    from src.env.respawnGoal import Respawn
+    from src.env.respawnGoal_3 import Respawn
     
 import copy
 target_not_movable = False

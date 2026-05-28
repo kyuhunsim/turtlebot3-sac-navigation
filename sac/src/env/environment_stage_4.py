@@ -12,7 +12,7 @@ from std_srvs.srv import Empty
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from respawnGoal import Respawn
+from respawnGoal_3 import Respawn
 
 class Env():
     def __init__(self, action_dim=2):
