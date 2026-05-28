@@ -11,7 +11,7 @@ class Combination():
             (-1.5, 7.8), (-1, 7.8), (0, 7.8), (0, 6), (1, 6)
         ]
         self.current_waypoint_index = 0
-        self.forward = True  # 경로의 진행 방향 (True: 정방향, False: 역방향)
+        self.forward = True  # Path direction: True for forward, False for reverse.
         self.moving()
 
     def moving(self):
@@ -43,7 +43,7 @@ class Combination():
                     direction_y = target_y - obstacle_2.pose.position.y
 
                     distance = (direction_x ** 2 + direction_y ** 2) ** 0.5
-                    step_size = 0.01  # 한번에 이동할 크기
+                    step_size = 0.01  # Movement distance per update.
                     move_x = step_size * direction_x / distance
                     move_y = step_size * direction_y / distance
 

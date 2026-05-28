@@ -105,18 +105,18 @@ class Env():
         obstacle_min_range = state[-2]
         distance_reward = 2.0 **(1-(current_distance / self.goal_distance))
 
-        # 방향 보상: 목표 방향과 일치할수록 더 높은 보상을 줌
+        # Heading reward: higher when the robot points toward the goal.
 
         if abs(heading) <= pi/2:  # Heading within 45 degrees
             heading_reward = 5.0 * (1 - abs(heading) / (pi / 2))
         else:  # More penalty for heading more than 45 degrees off
             heading_reward = -5.0 * (abs(heading)/pi) 
 
-        # 기본 보상 계산: 거리 보상에 더 높은 우선순위를 두고 방향 보상을 더함
+        # Base reward: prioritize distance reward and add heading reward.
         base_reward = distance_reward * heading_reward
 
-        # 타임 스텝에 따른 벌점 추가
-        time_penalty = -1  # 타임 스텝마다 소량의 벌점 추가
+        # Add a small penalty at each time step.
+        time_penalty = -1
 
         if obstacle_min_range < 0.2:
             ob_reward = -10

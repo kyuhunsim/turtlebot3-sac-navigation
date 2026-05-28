@@ -90,18 +90,17 @@ def train():
 
 
             state = next_state 
-        # total_numsteps는 지금 0~ num_steps까지 쭉 진행, num_steps는 지금 50000으로 설정되어있음.
+        # total_numsteps runs from 0 to num_steps; num_steps is configured in default.py.
         if total_numsteps > args.num_steps:
             print('End of training')
             break
 
         writer.add_scalar('reward/train', episode_reward, i_episode)
         print("Episode: {}, total numsteps: {}, episode steps: {}, reward: {}".format(i_episode, total_numsteps, episode_steps, round(episode_reward, 2)))
-        #i_episode는 1부터 시작함. for문이 돈 횟수를 의미함.
+        # i_episode starts at 1 and represents the number of completed loop iterations.
 
         if i_episode % 10 == 0 and args.eval is True:
-            #for문이 10번 돌때마다 test를 진행함. 그런데 eval이 True이어야 함.
-            #그런데 eval이 True이면 항상 그런거 아닌가??
+            # Run a test every 10 episodes. Evaluation mode should be enabled here.
             avg_reward = 0.
             episodes = 10
             for _  in range(episodes):
@@ -127,7 +126,7 @@ def train():
             print("----------------------------------------")
             print("Test Episodes: {}, Avg. Reward: {}".format(episodes, round(avg_reward, 2)))
             print("----------------------------------------")
-        #여기는 1000단위로 출력되는 곳임.
+        # Print progress every 1000 total steps.
 
         if i_episode % 10 == 0:
             result.data = episode_reward

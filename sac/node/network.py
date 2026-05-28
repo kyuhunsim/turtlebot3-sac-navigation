@@ -13,7 +13,7 @@ def weights_init_(m):
         torch.nn.init.xavier_uniform_(m.weight, gain=1)
         torch.nn.init.constant_(m.bias, 0)
 
-#------------------------------------------------------------ # 여기까지는 문제없을듯
+#------------------------------------------------------------
 
 class QNetwork(nn.Module):
     def __init__(self, num_inputs, num_actions, hidden_dim):

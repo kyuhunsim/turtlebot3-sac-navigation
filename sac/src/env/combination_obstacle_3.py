@@ -35,7 +35,7 @@ class RandomMover():
                     direction_y = target_y - obstacle_1.pose.position.y
 
                     distance = (direction_x ** 2 + direction_y ** 2) ** 0.5
-                    step_size = 0.01  # 한번에 이동할 크기
+                    step_size = 0.01  # Movement distance per update.
                     move_x = step_size * direction_x / distance
                     move_y = step_size * direction_y / distance
 

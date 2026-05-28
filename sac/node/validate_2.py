@@ -41,14 +41,14 @@ def load_model_and_test():
     episode_count = 0
 
     state = env.reset()
-    start_position = env.get_robot_position()  # 초기 위치
+    start_position = env.get_robot_position()  # Initial position.
 
     while goal_reached_count < total_episodes:
         rospy.loginfo(f'Starting episode {episode_count + 1}/{total_episodes}')
         episode_count += 1
         done = False
 
-        path = [env.get_robot_position()]  # 초기 위치 기록
+        path = [env.get_robot_position()]  # Record the initial position.
 
         while not done:
             state = np.float32(state)
@@ -60,14 +60,14 @@ def load_model_and_test():
             next_state, reward, done = env.step(unnorm_action, past_action)
             past_action = copy.deepcopy(action)
 
-            path.append(env.get_robot_position())  # 매 스텝 후 위치 기록
+            path.append(env.get_robot_position())  # Record the position after each step.
             state = copy.deepcopy(next_state)
 
             rospy.loginfo(f'Step Reward: {reward}, Done: {done}')
 
             if reward == 100:
                 goal_reached_count += 1
-                goal_position = env.get_robot_position()  # 목표 지점 위치 얻기
+                goal_position = env.get_robot_position()  # Get the goal position.
                 straight_line_distance = distance.euclidean(start_position, goal_position)
                 path_distance = sum(distance.euclidean(path[i], path[i+1]) for i in range(len(path) - 1))
                 ratio = path_distance / straight_line_distance
@@ -76,14 +76,14 @@ def load_model_and_test():
                 rospy.loginfo(f'Goal reached {goal_reached_count}/{episode_count}: Ratio: {ratio}')
                 
                 state = copy.deepcopy(next_state)
-                start_position = env.get_robot_position()  # 현재 위치를 새로운 시작 위치로 설정
-                break  # 목표에 도달했으므로 에피소드 종료
+                start_position = env.get_robot_position()  # Use the current position as the next start position.
+                break  # End the episode because the goal was reached.
 
             elif reward == -10:
                 rospy.loginfo(f'Collision detected, resetting environment.')
-                state = env.reset()  # 초기 위치로 리셋
-                start_position = env.get_robot_position()  # 초기 시작 위치 설정
-                break  # while not done 루프를 종료하고 새로운 에피소드 시작
+                state = env.reset()  # Reset to the initial position.
+                start_position = env.get_robot_position()  # Set the initial start position.
+                break  # Exit the loop and start a new episode.
 
     avg_ratio = np.mean(ratios)
     rospy.loginfo(f'Average Ratio after {total_episodes} goal reaches: {avg_ratio}')

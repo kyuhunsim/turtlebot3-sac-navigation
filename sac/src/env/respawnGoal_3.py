@@ -41,8 +41,8 @@ class Respawn():
         self.last_goal_x = self.init_goal_x
         self.last_goal_y = self.init_goal_y
         self.last_index = 0
-        self.index = 0  # 순차적 접근을 위한 인덱스
-        self.goal_order = [(2, -1), (2, 1), (2, 0), (-0.5, -1), (-0.5, 1), (-0.5, 0), (1, 0), (1, 1), (0, 1.5)]  # 목표 순서
+        self.index = 0  # Index for sequential goal selection.
+        self.goal_order = [(2, -1), (2, 1), (2, 0), (-0.5, -1), (-0.5, 1), (-0.5, 0), (1, 0), (1, 1), (0, 1.5)]  # Goal sequence.
         self.sub_model = rospy.Subscriber('gazebo/model_states', ModelStates, self.checkModel)
         self.check_model = False
         self.index = 0
