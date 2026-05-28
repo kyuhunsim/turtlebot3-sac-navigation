@@ -16,6 +16,9 @@ log/
 *.ckpt
 *.pkl
 *.pickle
+!pretrained/
+!pretrained/**/
+!pretrained/**/*.pth
 sac/SAC_model/
 sac/runs/
 sac/csv/

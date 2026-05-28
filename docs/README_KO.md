@@ -17,6 +17,7 @@ sac/
 - `docs`: README 이미지, GIF, 한글 문서 등 문서용 파일
 - `gazebo`: ROS package `turtlebot3_gazebo`
 - `sac`: ROS package `turtlebot3_sac`
+- `pretrained`: 바로 검증해볼 수 있게 넣어둔 pretrained checkpoint
 
 폴더 이름은 보기 좋게 `gazebo`, `sac`로 정리했지만 ROS package 이름은 그대로 유지했습니다. 그래서 실행 명령은 `roslaunch turtlebot3_gazebo ...`, `roslaunch turtlebot3_sac ...` 형식입니다.
 
@@ -113,6 +114,119 @@ source ~/catkin_ws/devel/setup.bash
 roslaunch turtlebot3_sac turtlebot3_sac_stage_4.launch
 ```
 
+## 처음부터 끝까지 실행하는 순서
+
+### 1. clone 및 build
+
+```bash
+mkdir -p ~/catkin_ws/src
+cd ~/catkin_ws/src
+git clone https://github.com/kyuhunsim/turtlebot3-sac-navigation.git
+cd ~/catkin_ws
+catkin_make
+source /opt/ros/noetic/setup.bash
+source devel/setup.bash
+export TURTLEBOT3_MODEL=burger
+```
+
+쉘이 `zsh`라면 `setup.bash` 대신 `setup.zsh`를 source하면 됩니다.
+
+`catkin_make`가 conda Python을 잘못 잡아서 실패하면 system Python으로 다시 빌드합니다.
+
+```bash
+PYTHONPATH=/opt/ros/noetic/lib/python3/dist-packages:/usr/lib/python3/dist-packages \
+CMAKE_PREFIX_PATH=/opt/ros/noetic \
+catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3
+```
+
+### 2. Gazebo 실행
+
+터미널 1:
+
+```bash
+cd ~/catkin_ws
+source /opt/ros/noetic/setup.bash
+source devel/setup.bash
+export TURTLEBOT3_MODEL=burger
+roslaunch turtlebot3_gazebo basement3_world.launch
+```
+
+`Resource not found: turtlebot3_description`가 뜨면 TurtleBot3 dependency가 없는 상태입니다.
+
+`No module named 'rospkg'`가 뜨면 아래를 설치합니다.
+
+```bash
+sudo apt install python3-rospkg
+```
+
+### 3. 새로 학습 시작
+
+터미널 2:
+
+```bash
+cd ~/catkin_ws
+source /opt/ros/noetic/setup.bash
+source devel/setup.bash
+export TURTLEBOT3_MODEL=burger
+roslaunch turtlebot3_sac turtlebot3_sac_stage_4.launch
+```
+
+이때 `sac/node/default.py`의 기본값은 fresh training 기준입니다.
+
+```python
+load_model = False
+load_episode = 2500
+world = 'stage_4'
+```
+
+학습을 돌리면 아래 폴더에 결과가 쌓입니다.
+
+```text
+sac/SAC_model/
+sac/runs/
+sac/csv/
+```
+
+### 4. 포함된 pretrained 모델 불러와서 검증
+
+이 repository에는 바로 검증용으로 쓸 수 있게 pretrained checkpoint 2개를 추적해 두었습니다.
+
+```text
+pretrained/stage_4/2500_policy_net.pth
+pretrained/stage_4/2500value_net.pth
+```
+
+먼저 runtime checkpoint 폴더로 복사합니다.
+
+```bash
+cd ~/catkin_ws/src/turtlebot3-sac-navigation
+mkdir -p sac/SAC_model/stage_4
+cp pretrained/stage_4/2500_policy_net.pth sac/SAC_model/stage_4/
+cp pretrained/stage_4/2500value_net.pth sac/SAC_model/stage_4/
+```
+
+그 다음 `sac/node/default.py`를 아래처럼 바꿉니다.
+
+```python
+load_model = True
+load_episode = 2500
+world = 'stage_4'
+```
+
+Gazebo가 터미널 1에서 계속 켜져 있는 상태에서, 터미널 2에서 검증을 실행합니다.
+
+```bash
+cd ~/catkin_ws
+source /opt/ros/noetic/setup.bash
+source devel/setup.bash
+export TURTLEBOT3_MODEL=burger
+roslaunch turtlebot3_sac turtlebot3_sac_stage_1_validate.launch
+```
+
+이 launch는 파일명은 `stage_1_validate`지만 실제로는 `validate_3.py`와 `/stage_number=4`를 사용해서 복잡한 custom map 검증을 수행합니다.
+
+검증을 다 본 뒤 다시 새 학습을 시작할 때는 `load_model = False`로 되돌리는 것이 맞습니다.
+
 ## Stage 차이
 
 이 repository에서 `stage`는 Gazebo world 자체를 자동으로 바꾸는 이름이라기보다, SAC 실험 설정을 나누는 preset입니다. Gazebo world는 따로 `roslaunch turtlebot3_gazebo basement3_world.launch`로 실행하고, SAC launch 파일이 학습/검증 방식과 obstacle script를 선택합니다.
@@ -163,47 +277,22 @@ sac/csv/
 - `sac/runs/`: TensorBoard event log
 - `sac/csv/`: validation result CSV
 
-이 파일들은 실험 산출물이기 때문에 Git에는 올리지 않도록 `.gitignore`에 넣어두었습니다. 로컬에는 남아 있고, GitHub에는 올라가지 않습니다.
+이 파일들은 실험 산출물이기 때문에 Git에는 올리지 않도록 `.gitignore`에 넣어두었습니다. 다만 repository에 포함한 검증용 checkpoint `pretrained/stage_4/*.pth` 2개만 예외적으로 추적합니다.
 
 ## 학습된 모델 보관
 
 대표 checkpoint는 `stage_4`의 2500 episode 모델입니다.
 
 ```text
-sac/SAC_model/stage_4/2500_policy_net.pth
-sac/SAC_model/stage_4/2500value_net.pth
+pretrained/stage_4/2500_policy_net.pth
+pretrained/stage_4/2500value_net.pth
 ```
 
-이 두 파일은 로컬에서 아래 압축 파일로 묶어둘 수 있습니다.
-
-```text
-artifacts/stage4_episode2500_sac_checkpoint.tar.gz
-```
-
-현재 로컬 압축본 정보:
-
-```text
-size: 820K
-sha256: f5993d4f7ce3378acf57584ffddb55ee31c1e2aad2ed4211ae54d67917f40b0e
-```
-
-`artifacts/`는 Git ignore 대상입니다. GitHub repository에 직접 넣기보다는 GitHub Releases, Google Drive, Hugging Face Hub 같은 별도 artifact 저장소에 올리는 방식을 권장합니다.
-
-압축 모델을 받은 뒤 사용할 때는 다음 위치에 풀면 됩니다.
+실행 시에는 이 두 파일을 아래 위치로 복사해서 사용합니다.
 
 ```text
 sac/SAC_model/stage_4/
 ```
-
-그 다음 `sac/node/default.py`에서:
-
-```python
-load_model = True
-load_episode = 2500
-world = 'stage_4'
-```
-
-로 설정하면 됩니다.
 
 ## 주의사항
 
