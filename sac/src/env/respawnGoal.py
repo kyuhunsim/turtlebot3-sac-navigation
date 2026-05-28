@@ -3,15 +3,16 @@ import rospy
 import random
 import time
 import os
+import rospkg
 from gazebo_msgs.srv import SpawnModel, DeleteModel
 from gazebo_msgs.msg import ModelStates
 from geometry_msgs.msg import Pose
 
 class Respawn():
     def __init__(self):
-        self.modelPath = os.path.dirname(os.path.realpath(__file__))
-        self.modelPath = self.modelPath.replace('turtlebot3_sac/src/env',
-                                                'turtlebot3_gazebo/models/turtlebot3_square/goal_box/model.sdf')
+        rospack = rospkg.RosPack()
+        package_path = rospack.get_path('turtlebot3_gazebo')
+        self.modelPath = os.path.join(package_path, 'models', 'turtlebot3_square', 'goal_box', 'model.sdf')
         self.f = open(self.modelPath, 'r')
         self.model = self.f.read()
         self.stage = rospy.get_param('/stage_number')

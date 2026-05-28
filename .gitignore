@@ -16,9 +16,9 @@ log/
 *.ckpt
 *.pkl
 *.pickle
-turtlebot3_sac/SAC_model/
-turtlebot3_sac/runs/
-turtlebot3_sac/csv/
+sac/SAC_model/
+sac/runs/
+sac/csv/
 events.out.tfevents*
 
 # Jupyter / local analysis

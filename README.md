@@ -4,6 +4,8 @@ Soft Actor-Critic (SAC) navigation for TurtleBot3 in a custom Gazebo environment
 
 This repository was extracted from a modified `ROBOTIS-GIT/turtlebot3_simulations` workspace and starts with a fresh Git history. It keeps only the custom SAC package and the minimal Gazebo assets needed for the custom environment.
 
+This work began as a Sungkyunkwan University Undergraduate Research Program (URP) project in the summer of 2024 and received an award at the 2024 Undergraduate Academic Conference of the School of Mechanical Engineering, Sungkyunkwan University.
+
 ## Results
 
 Execution examples:
@@ -36,8 +38,8 @@ flowchart LR
 
 ## Contents
 
-- `turtlebot3_sac`: SAC agent, replay buffer, neural networks, ROS training nodes, validation nodes, and environment code.
-- `turtlebot3_gazebo`: minimal custom Gazebo package containing the custom world, custom model, goal-box model, and launch file.
+- `sac`: ROS package `turtlebot3_sac`, containing the SAC agent, replay buffer, neural networks, ROS training nodes, validation nodes, and environment code.
+- `gazebo`: ROS package `turtlebot3_gazebo`, containing the custom world, custom model, goal-box model, and launch file.
 - `docs/assets`: README media files.
 - `LICENSE.ROBOTIS`: upstream ROBOTIS license text kept for attribution and dependency clarity.
 
@@ -138,7 +140,7 @@ roslaunch turtlebot3_sac turtlebot3_sac_stage_1_validate.launch
 Main training settings are in:
 
 ```text
-turtlebot3_sac/node/default.py
+sac/node/default.py
 ```
 
 Important fields:
@@ -155,29 +157,29 @@ Important fields:
 Training entrypoint:
 
 ```text
-turtlebot3_sac/node/train_2.py
+sac/node/train_2.py
 ```
 
 Model save/load logic:
 
 ```text
-turtlebot3_sac/node/sac.py
+sac/node/sac.py
 ```
 
 Environment and reward logic:
 
 ```text
-turtlebot3_sac/node/environment_stage_1.py
-turtlebot3_sac/src/env/respawnGoal_3.py
+sac/node/environment_stage_1.py
+sac/src/env/respawnGoal_3.py
 ```
 
 ## Generated Files
 
 Running training or validation creates local experiment artifacts. These files are intentionally ignored by Git:
 
-- `turtlebot3_sac/SAC_model/`: saved policy and critic checkpoints.
-- `turtlebot3_sac/runs/`: TensorBoard event logs.
-- `turtlebot3_sac/csv/`: validation CSV outputs.
+- `sac/SAC_model/`: saved policy and critic checkpoints.
+- `sac/runs/`: TensorBoard event logs.
+- `sac/csv/`: validation CSV outputs.
 - `*.pth`, `*.pt`: model weights.
 - `events.out.tfevents*`: TensorBoard events.
 - `*.ipynb`: local analysis notebooks.
