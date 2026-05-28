@@ -47,7 +47,9 @@ def load_model_and_test():
     state = env.reset()
     start_position = env.get_robot_position()  # 초기 위치
 
-    with open(dirPath+'/csv/test_results_9.csv', mode='w', newline='') as file:
+    csv_dir = os.path.join(dirPath, 'csv')
+    os.makedirs(csv_dir, exist_ok=True)
+    with open(os.path.join(csv_dir, 'test_results_9.csv'), mode='w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(['start_point', 'goal_point', 'path_length', 'time', 'path','goal_reached'])
 

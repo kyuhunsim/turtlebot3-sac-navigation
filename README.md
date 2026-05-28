@@ -18,24 +18,6 @@ Training reward:
 
 ![Training reward](docs/assets/training-reward.png)
 
-## Schematic
-
-```mermaid
-flowchart LR
-  Gazebo[Gazebo world] --> Sensors[LaserScan and Odometry]
-  Sensors --> Env[turtlebot3_sac environment]
-  Env --> State[State vector]
-  State --> SAC[SAC policy and critic networks]
-  SAC --> Action[Linear and angular velocity]
-  Action --> TurtleBot3[TurtleBot3 cmd_vel]
-  TurtleBot3 --> Gazebo
-  Env --> Reward[Reward and terminal signal]
-  Reward --> Replay[Replay buffer]
-  Replay --> SAC
-  SAC --> Models[SAC_model checkpoints]
-  Env --> Logs[TensorBoard runs]
-```
-
 ## Contents
 
 - `sac`: ROS package `turtlebot3_sac`, containing the SAC agent, replay buffer, neural networks, ROS training nodes, validation nodes, and environment code.
@@ -152,7 +134,7 @@ Important fields:
 - `ACTION_V_MIN`, `ACTION_V_MAX`: linear velocity range.
 - `ACTION_W_MIN`, `ACTION_W_MAX`: angular velocity range.
 - `world`: checkpoint/log subdirectory name.
-- `load_model`, `load_episode`: whether to resume from an existing checkpoint.
+- `load_model`, `load_episode`: whether to resume from an existing checkpoint. Keep `load_model = False` for fresh training from a new clone.
 
 Training entrypoint:
 
