@@ -202,4 +202,4 @@ Checked during repository cleanup:
 
 ## Notes
 
-Some scripts are still experiment-specific variants. For a polished release, choose the official training and validation entrypoints and remove unused copies.
+Use `train_2.py` for training and `validate_3.py` or `validate_4.py` through the launch files above for validation.

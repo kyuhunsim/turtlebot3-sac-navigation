@@ -1,3 +1,0 @@
-<launch>
-  <node pkg="turtlebot3_sac" type="validate_network.py" name="turtlebot3_sac_stage_1" output="screen" />
-</launch>
