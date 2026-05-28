@@ -6,6 +6,8 @@ This repository was extracted from a modified `ROBOTIS-GIT/turtlebot3_simulation
 
 This work began as a Sungkyunkwan University Undergraduate Research Program (URP) project in the summer of 2024 and received an award at the 2024 Undergraduate Academic Conference of the School of Mechanical Engineering, Sungkyunkwan University.
 
+Korean documentation is available at [docs/README_KO.md](docs/README_KO.md).
+
 ## Results
 
 Execution examples:
