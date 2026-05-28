@@ -139,7 +139,7 @@ sac/node/default.py
 - `gamma`, `tau`, `lr`, `alpha`: SAC hyperparameter
 - `batch_size`, `hidden_dim`, `replay_size`: 학습 batch, network 크기, replay buffer 크기
 - `max_steps`, `max_episodes`: episode 길이와 전체 학습 episode 수
-- `state_dim`, `action_dim`: state/action 차원
+- `state_dim`, `action_dim`: state/action 차원. 현재 `state_dim=30`은 24개로 downsample된 laser sector, 이전 action 2개, navigation/obstacle feature 4개로 구성됩니다.
 - `ACTION_V_MIN`, `ACTION_V_MAX`: 선속도 범위
 - `ACTION_W_MIN`, `ACTION_W_MAX`: 각속도 범위
 - `world`: model/log 저장 하위 폴더 이름

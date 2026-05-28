@@ -43,6 +43,21 @@ class Env():
         #Keys CTRL + c will stop script
         rospy.on_shutdown(self.shutdown)
 
+    def get_scan_range(self, scan, sample_count=24):
+        full_scan = []
+        for value in scan.ranges:
+            if value == float('Inf') or value == float('inf'):
+                full_scan.append(3.5)
+            elif np.isnan(value) or value == float('nan'):
+                full_scan.append(0)
+            else:
+                full_scan.append(value)
+
+        sectors = np.array_split(np.array(full_scan), sample_count)
+        sampled_scan = [round(float(np.min(sector)), 3) for sector in sectors]
+
+        return full_scan, sampled_scan
+
     def shutdown(self):
         rospy.loginfo("Stopping TurtleBot")
         self.pub_cmd_vel.publish(Twist())
@@ -77,20 +92,15 @@ class Env():
         self.heading = round(heading, 3)
 
     def getState(self, scan, past_action):
-        scan_range = []
         heading = self.heading
         min_range = 0.136
         done = False
 
-        for i in range(len(scan.ranges)):
-            if scan.ranges[i] == float('Inf') or scan.ranges[i] == float('inf'):
-                scan_range.append(3.5)
-            elif np.isnan(scan.ranges[i]) or scan.ranges[i] == float('nan'):
-                scan_range.append(0)
-            else:
-                scan_range.append(scan.ranges[i])
+        full_scan, scan_range = self.get_scan_range(scan)
+        obstacle_min_range = round(min(full_scan), 2)
+        obstacle_angle = np.argmin(full_scan)
 
-        if min_range > min(scan_range) > 0:
+        if min_range > min(full_scan) > 0:
             done = True
 
         for pa in past_action:
@@ -100,11 +110,11 @@ class Env():
         if current_distance < 0.2:
             self.get_goalbox = True
 
-        return scan_range + [heading, current_distance], done
+        return scan_range + [heading, current_distance, obstacle_min_range, obstacle_angle], done
 
     def setReward(self, state, done):
-        current_distance = state[-1]
-        heading = state[-2]
+        current_distance = state[-3]
+        heading = state[-4]
 
         reward=0
 

@@ -145,7 +145,7 @@ Important fields:
 - `gamma`, `tau`, `lr`, `alpha`: SAC optimization parameters.
 - `batch_size`, `hidden_dim`, `replay_size`: training capacity and network size.
 - `max_steps`, `max_episodes`: episode length and training duration.
-- `state_dim`, `action_dim`: observation and action dimensions.
+- `state_dim`, `action_dim`: observation and action dimensions. The current `state_dim=30` is composed of 24 downsampled laser sectors, 2 previous action values, and 4 navigation/obstacle features.
 - `ACTION_V_MIN`, `ACTION_V_MAX`: linear velocity range.
 - `ACTION_W_MIN`, `ACTION_W_MAX`: angular velocity range.
 - `world`: checkpoint/log subdirectory name.
