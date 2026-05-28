@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# ROS / catkin
+build/
+devel/
+install/
+log/
+.catkin_workspace
+
+# Machine learning artifacts kept locally, not committed
+*.pth
+*.pt
+*.onnx
+*.ckpt
+*.pkl
+*.pickle
+turtlebot3_sac/SAC_model/
+turtlebot3_sac/runs/
+turtlebot3_sac/csv/
+events.out.tfevents*
+
+# Jupyter / local analysis
+.ipynb_checkpoints/
+*.ipynb
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store

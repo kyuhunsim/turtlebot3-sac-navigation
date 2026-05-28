@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>turtlebot3_gazebo</name>
+  <version>0.1.0</version>
+  <description>Custom TurtleBot3 Gazebo assets for the basement3 environment.</description>
+  <license>Apache-2.0</license>
+  <maintainer email="kyuhun@todo.todo">kyuhun</maintainer>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>gazebo_ros</exec_depend>
+  <exec_depend>turtlebot3_description</exec_depend>
+  <exec_depend>xacro</exec_depend>
+
+  <export>
+    <gazebo_ros gazebo_model_path="${prefix}/models"/>
+  </export>
+</package>
