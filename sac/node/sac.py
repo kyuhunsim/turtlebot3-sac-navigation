@@ -118,8 +118,22 @@ class SAC(object):
     # Load model parameters
     def load_models(self, episode,args):
         dir_path = os.path.join(dirPath, 'SAC_model', args.world)
-        self.policy.load_state_dict(torch.load(f'{dir_path}/{episode}_policy_net.pth'))
-        self.critic.load_state_dict(torch.load(f'{dir_path}/{episode}value_net.pth'))
+        policy_path = os.path.join(dir_path, f'{episode}_policy_net.pth')
+        critic_path = os.path.join(dir_path, f'{episode}value_net.pth')
+
+        if not os.path.exists(policy_path) or not os.path.exists(critic_path):
+            dir_path = os.path.join(dirPath, os.pardir, 'pretrained', args.world)
+            policy_path = os.path.join(dir_path, f'{episode}_policy_net.pth')
+            critic_path = os.path.join(dir_path, f'{episode}value_net.pth')
+
+        if not os.path.exists(policy_path) or not os.path.exists(critic_path):
+            raise FileNotFoundError(
+                f'Model checkpoint not found for {args.world} episode {episode}'
+            )
+
+        print(f'Loading models from {os.path.abspath(dir_path)}')
+        self.policy.load_state_dict(torch.load(policy_path))
+        self.critic.load_state_dict(torch.load(critic_path))
         hard_update(self.critic_target, self.critic)
         # soft_q_net.load_state_dict(torch.load(dirPath + '/SAC_model/' + world + '/'+str(episode)+ 'soft_q_net.pth'))
         # target_value_net.load_state_dict(torch.load(dirPath + '/SAC_model/' + world + '/'+str(episode)+ 'target_value_net.pth'))

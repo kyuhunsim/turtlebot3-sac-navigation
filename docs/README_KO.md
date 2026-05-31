@@ -28,6 +28,7 @@ sac/
 | 파일 | 설명 |
 | --- | --- |
 | `gazebo/launch/basement3_world.launch` | Gazebo world를 열고 TurtleBot3 모델을 spawn하는 launch 파일 |
+| `gazebo/urdf/turtlebot3_burger_sac.urdf.xacro` | SAC checkpoint 입력에 맞춰 lidar를 24 samples로 고정한 TurtleBot3 burger URDF |
 | `gazebo/worlds/basement3.world` | 복잡한 형태의 custom Gazebo map |
 | `gazebo/models/basement3/` | `basement3.world`에서 사용하는 custom model |
 | `gazebo/models/turtlebot3_square/goal_box/` | 목표 지점으로 spawn되는 goal box model |
@@ -189,23 +190,21 @@ sac/csv/
 
 ### 4. 포함된 pretrained 모델 불러와서 검증
 
-이 repository에는 바로 검증용으로 쓸 수 있게 pretrained checkpoint 2개를 추적해 두었습니다.
+이 repository에는 각 실행 폴더의 마지막 pretrained checkpoint 쌍을 추적해 두었습니다.
 
 ```text
+pretrained/stage_1/200_policy_net.pth
+pretrained/stage_1/200value_net.pth
 pretrained/stage_4/2500_policy_net.pth
 pretrained/stage_4/2500value_net.pth
+pretrained/validate/160_policy_net.pth
+pretrained/validate/160value_net.pth
 ```
 
-먼저 runtime checkpoint 폴더로 복사합니다.
+대응하는 runtime checkpoint가 없으면 loader가 `pretrained/` 아래의 파일을 자동으로 불러옵니다.
+압축 해제나 수동 복사는 필요하지 않습니다.
 
-```bash
-cd ~/catkin_ws/src/turtlebot3-sac-navigation
-mkdir -p sac/SAC_model/stage_4
-cp pretrained/stage_4/2500_policy_net.pth sac/SAC_model/stage_4/
-cp pretrained/stage_4/2500value_net.pth sac/SAC_model/stage_4/
-```
-
-그 다음 `sac/node/default.py`를 아래처럼 바꿉니다.
+기본 validation launch가 사용하는 checkpoint 설정은 아래와 같습니다.
 
 ```python
 load_model = True
@@ -225,7 +224,8 @@ roslaunch turtlebot3_sac turtlebot3_sac_stage_1_validate.launch
 
 이 launch는 파일명은 `stage_1_validate`지만 실제로는 `validate_3.py`와 `/stage_number=4`를 사용해서 복잡한 custom map 검증을 수행합니다.
 
-검증을 다 본 뒤 다시 새 학습을 시작할 때는 `load_model = False`로 되돌리는 것이 맞습니다.
+검증 entrypoint는 항상 checkpoint를 불러옵니다. 새 학습을 시작할 때는
+`sac/node/default.py`의 `load_model = False`를 유지합니다.
 
 ## Stage 차이
 
@@ -277,22 +277,23 @@ sac/csv/
 - `sac/runs/`: TensorBoard event log
 - `sac/csv/`: validation result CSV
 
-이 파일들은 실험 산출물이기 때문에 Git에는 올리지 않도록 `.gitignore`에 넣어두었습니다. 다만 repository에 포함한 검증용 checkpoint `pretrained/stage_4/*.pth` 2개만 예외적으로 추적합니다.
+이 파일들은 실험 산출물이기 때문에 Git에는 올리지 않도록 `.gitignore`에 넣어두었습니다. 다만 repository에 포함한 최종 checkpoint `pretrained/**/*.pth` 파일만 예외적으로 추적합니다.
 
 ## 학습된 모델 보관
 
-대표 checkpoint는 `stage_4`의 2500 episode 모델입니다.
+각 실행 폴더의 마지막 checkpoint를 보관합니다. 기본 validation에 사용하는 대표 checkpoint는 `stage_4`의 2500 episode 모델입니다.
 
 ```text
+pretrained/stage_1/200_policy_net.pth
+pretrained/stage_1/200value_net.pth
 pretrained/stage_4/2500_policy_net.pth
 pretrained/stage_4/2500value_net.pth
+pretrained/validate/160_policy_net.pth
+pretrained/validate/160value_net.pth
 ```
 
-실행 시에는 이 두 파일을 아래 위치로 복사해서 사용합니다.
-
-```text
-sac/SAC_model/stage_4/
-```
+대응하는 runtime checkpoint가 없으면 loader가 `pretrained/` 파일을 자동으로 사용합니다.
+실행 전에 `sac/SAC_model/`로 복사할 필요는 없습니다.
 
 ## 주의사항
 

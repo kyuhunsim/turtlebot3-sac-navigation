@@ -28,23 +28,16 @@ class Respawn():
             return
 
         self.stage = 4
-        self.world_offset_x = -0.0125
-        self.world_offset_y = 4.10245
         self.goal_position = Pose()
-        self.goal_order_local = [
-            (2, -1),
-            (2, 1),
-            (2, 0),
-            (-0.5, -1),
-            (-0.5, 1),
-            (-0.5, 0),
-            (1, 0),
-            (1, 1),
-            (0, 1.5),
-        ]
         self.goal_order = [
-            (x + self.world_offset_x, y + self.world_offset_y)
-            for x, y in self.goal_order_local
+            (-1, 3),
+            (1.1, 7.5),
+            (-1.1, 7.75),
+            (-2, 4),
+            (-2, 3),
+            (1, 3),
+            (1, 6),
+            (2, 4.2),
         ]
         self.init_goal_x, self.init_goal_y = self.goal_order[0]
         self.goal_position.position.x = self.init_goal_x

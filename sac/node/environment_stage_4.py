@@ -43,21 +43,6 @@ class Env():
         #Keys CTRL + c will stop script
         rospy.on_shutdown(self.shutdown)
 
-    def get_scan_range(self, scan, sample_count=24):
-        full_scan = []
-        for value in scan.ranges:
-            if value == float('Inf') or value == float('inf'):
-                full_scan.append(3.5)
-            elif np.isnan(value) or value == float('nan'):
-                full_scan.append(0)
-            else:
-                full_scan.append(value)
-
-        sectors = np.array_split(np.array(full_scan), sample_count)
-        sampled_scan = [round(float(np.min(sector)), 3) for sector in sectors]
-
-        return full_scan, sampled_scan
-
     def shutdown(self):
         rospy.loginfo("Stopping TurtleBot")
         self.pub_cmd_vel.publish(Twist())
@@ -96,11 +81,22 @@ class Env():
         min_range = 0.136
         done = False
 
-        full_scan, scan_range = self.get_scan_range(scan)
-        obstacle_min_range = round(min(full_scan), 2)
-        obstacle_angle = np.argmin(full_scan)
+        if len(scan.ranges) != 24:
+            raise RuntimeError(f'Expected 24 LaserScan samples, got {len(scan.ranges)}')
 
-        if min_range > min(full_scan) > 0:
+        scan_range = []
+        for value in scan.ranges:
+            if value == float('Inf') or value == float('inf'):
+                scan_range.append(3.5)
+            elif np.isnan(value) or value == float('nan'):
+                scan_range.append(0)
+            else:
+                scan_range.append(value)
+
+        obstacle_min_range = round(min(scan_range), 2)
+        obstacle_angle = np.argmin(scan_range)
+
+        if min_range > min(scan_range) > 0:
             done = True
 
         for pa in past_action:

@@ -16,7 +16,7 @@ class config:
     replay_size = 50000
     cuda = False
     save_model = './model'
-    load_model = False
+    load_model = True
     rewards=[]
     max_steps=500
     num_steps=max_steps

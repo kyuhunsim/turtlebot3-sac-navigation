@@ -24,6 +24,7 @@ Training reward:
 
 - `sac`: ROS package `turtlebot3_sac`, containing the SAC agent, replay buffer, neural networks, ROS training nodes, validation nodes, and environment code.
 - `gazebo`: ROS package `turtlebot3_gazebo`, containing the custom world, custom model, goal-box model, and launch file.
+- `gazebo/urdf/turtlebot3_burger_sac.urdf.xacro`: SAC-specific TurtleBot3 Burger description with 24 lidar samples to match the checkpoint input.
 - `pretrained`: tracked pretrained checkpoint files for quick validation runs.
 - `docs/assets`: README media files.
 - `LICENSE.ROBOTIS`: upstream ROBOTIS license text kept for attribution and dependency clarity.
@@ -195,23 +196,22 @@ sac/csv/
 
 ### 4. Load the included pretrained model and validate it
 
-This repository includes one tracked pretrained checkpoint pair:
+This repository tracks the final checkpoint pair from each available run:
 
 ```text
+pretrained/stage_1/200_policy_net.pth
+pretrained/stage_1/200value_net.pth
 pretrained/stage_4/2500_policy_net.pth
 pretrained/stage_4/2500value_net.pth
+pretrained/validate/160_policy_net.pth
+pretrained/validate/160value_net.pth
 ```
 
-Copy the files into the runtime checkpoint directory:
+When a matching runtime checkpoint is not present, the loader automatically
+uses the corresponding file under `pretrained/`. No extraction or manual copy
+step is required.
 
-```bash
-cd ~/catkin_ws/src/turtlebot3-sac-navigation
-mkdir -p sac/SAC_model/stage_4
-cp pretrained/stage_4/2500_policy_net.pth sac/SAC_model/stage_4/
-cp pretrained/stage_4/2500value_net.pth sac/SAC_model/stage_4/
-```
-
-Then edit `sac/node/default.py` to load the checkpoint:
+The default validation launch uses the `stage_4` checkpoint:
 
 ```python
 load_model = True
@@ -231,7 +231,8 @@ roslaunch turtlebot3_sac turtlebot3_sac_stage_1_validate.launch
 
 That launch file runs `validate_3.py` on the complex custom map with `/stage_number=4`.
 
-After validation, switch `load_model` back to `False` before starting a new training run.
+The validation entrypoints always load a checkpoint. Training still follows the
+`load_model` value in `sac/node/default.py`; keep it `False` for a fresh run.
 
 ## Stages
 
@@ -292,7 +293,7 @@ Running training or validation creates local experiment artifacts. These files a
 - `sac/SAC_model/`: saved policy and critic checkpoints.
 - `sac/runs/`: TensorBoard event logs.
 - `sac/csv/`: validation CSV outputs.
-- `*.pth`, `*.pt`: model weights generated during experiments. The included `pretrained/stage_4/*.pth` files are explicitly tracked.
+- `*.pth`, `*.pt`: model weights generated during experiments. Selected final checkpoints under `pretrained/` are explicitly tracked.
 - `events.out.tfevents*`: TensorBoard events.
 - `*.ipynb`: local analysis notebooks.
 - `__pycache__/`, `*.pyc`: Python cache files.

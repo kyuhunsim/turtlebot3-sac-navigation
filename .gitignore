@@ -9,13 +9,14 @@ install/
 log/
 .catkin_workspace
 
-# Machine learning artifacts kept locally, not committed
+# Machine learning artifacts kept locally, except release checkpoints
 *.pth
 *.pt
 *.onnx
 *.ckpt
 *.pkl
 *.pickle
+# Small checkpoints selected for validation are committed from pretrained/.
 !pretrained/
 !pretrained/**/
 !pretrained/**/*.pth

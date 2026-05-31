@@ -27,13 +27,8 @@ rospy.loginfo('Action Min: ' + str(args.ACTION_V_MIN) + ' m/s and ' + str(args.A
 
 
 def load_model_and_test():
-    # Load model
-    if args.load_model:
-        agent.load_models(args.load_episode, args)
-        rospy.loginfo('Model loaded')
-        # print model information
-        
-        rospy.loginfo
+    agent.load_models(args.load_episode, args)
+    rospy.loginfo('Model loaded')
 
     # Initialize environment
     env = Env()
